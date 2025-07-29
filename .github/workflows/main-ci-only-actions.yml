@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Snyk Variables
         id: snyk_vars
-        uses: ./.github/actions/setup-snyk-vars.yml
+        uses: ./.github/actions/setup-snyk-vars
 
   use_outputs_in_another_job: # Job to demonstrate using outputs from env_vars
     runs-on: ubuntu-latest
