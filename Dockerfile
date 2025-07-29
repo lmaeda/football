@@ -2,7 +2,7 @@
 
 # --- Build Stage ---
 # Use a Maven and JDK image to build the application.
-FROM maven:3.8.5-openjdk-17-slim AS builder
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 # Set the working directory inside the container.
 WORKDIR /app
@@ -28,7 +28,7 @@ RUN mvn package
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
-FROM openjdk:25-ea-17-slim-bookworm
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
