@@ -58,19 +58,22 @@ jobs:
 
   snyk_security_scan:
     needs: [setup_vars, test_appcode]
+    runs-on: ubuntu-latest
     environment: snyk_demo
-    uses: ./.github/workflows/reusable-snyk-scans.yml
-    with:
-      ref: ${{ github.ref_name }}
-      snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
-      snyk_scm_integration_id: ${{ needs.setup_vars.outputs.snyk_scm_integration_id }}
-      proj_reponame: ${{ needs.setup_vars.outputs.proj_reponame }}
-      proj_repoorg: ${{ needs.setup_vars.outputs.proj_repoorg }}
-      proj_criticality: ${{ needs.setup_vars.outputs.proj_criticality }}
-      proj_env: ${{ needs.setup_vars.outputs.proj_env }}
-      proj_lifecycle: ${{ needs.setup_vars.outputs.proj_lifecycle }}
-      snyk_tags: ${{ needs.setup_vars.outputs.snyk_tags }}
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Run Snyk Security Scan
+        uses: ./.github/workflows/reusable-snyk-scans.yml
+        with:
+          ref: ${{ github.ref_name }}
+          snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
+          snyk_scm_integration_id: ${{ needs.setup_vars.outputs.snyk_scm_integration_id }}
+          proj_reponame: ${{ needs.setup_vars.outputs.proj_reponame }}
+          proj_repoorg: ${{ needs.setup_vars.outputs.proj_repoorg }}
+          proj_criticality: ${{ needs.setup_vars.outputs.proj_criticality }}
+          proj_env: ${{ needs.setup_vars.outputs.proj_env }}
+          proj_lifecycle: ${{ needs.setup_vars.outputs.proj_lifecycle }}
+          snyk_tags: ${{ needs.setup_vars.outputs.snyk_tags }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
