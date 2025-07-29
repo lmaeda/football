@@ -9,8 +9,8 @@ WORKDIR /app
 
 # Copy the Maven wrapper and pom.xml to leverage Docker layer caching.
 # This way, dependencies are only re-downloaded if pom.xml changes.
-COPY mvnw .
 COPY .mvn/ .mvn
+COPY mvnw .
 
 # Ensure the Maven wrapper is executable.
 RUN chmod +x mvnw
@@ -18,13 +18,13 @@ RUN chmod +x mvnw
 COPY pom.xml .
 
 # Download the dependencies without building the application.
-RUN ./mvnw -X install
+RUN mvn -X install
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application.
-RUN ./mvnw package
+RUN mvn package
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
