@@ -62,7 +62,7 @@ jobs:
     environment: snyk_demo
     steps:
       - name: Run Snyk Security Scan
-        uses: ./.github/workflows/reusable-snyk-scans.yml
+        uses: ./.github/workflows/reusable-snyk-scans
         with:
           ref: ${{ github.ref_name }}
           snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
