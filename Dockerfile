@@ -24,13 +24,13 @@ COPY pom.xml .
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
-RUN mvn -X dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application, skipping tests as they should be run in a separate CI stage.
-RUN mvn -X package
+RUN mvn clean install
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
