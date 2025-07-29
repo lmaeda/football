@@ -43,6 +43,7 @@ jobs:
   scan_vulnerability:
     runs-on: ubuntu-latest
     container: snyk/snyk:node
+    environment: snyk_demo
     env:
       SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
     steps:
@@ -65,6 +66,7 @@ jobs:
   refresh_container:
     needs: [scan_vulnerability]
     runs-on: ubuntu-latest
+    environment: snyk_demo
     env:
       DOCKER_BUILDKIT: "1"
       DOCKER_LOGIN: "${{ secrets.DOCKER_LOGIN }}"
