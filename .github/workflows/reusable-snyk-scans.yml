@@ -71,7 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: snyk_demo
     env:
-      DOCKER_BUILDKIT: "1"
       DOCKER_LOGIN: "${{ secrets.DOCKER_LOGIN }}"
       SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
     steps:

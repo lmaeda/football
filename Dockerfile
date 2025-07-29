@@ -24,7 +24,7 @@ RUN chmod +x mvnw
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
-RUN ./mvnw dependency:go-offline
+RUN ./mvnw -X dependency:go-offline
 
 # Copy the rest of the application source code.
 COPY src ./src
