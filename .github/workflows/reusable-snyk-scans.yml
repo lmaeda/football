@@ -42,7 +42,7 @@ on:
 jobs:
   scan_vulnerability:
     runs-on: ubuntu-latest
-    container: snyk/snyk:node
+    container: snyk/snyk:maven
     environment: snyk_demo
     env:
       SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
@@ -69,6 +69,7 @@ jobs:
   refresh_container:
     needs: [scan_vulnerability]
     runs-on: ubuntu-latest
+    container: snyk/snyk:docker
     environment: snyk_demo
     env:
       DOCKER_BUILDKIT: "1"
