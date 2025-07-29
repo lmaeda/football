@@ -3,7 +3,7 @@
 # --- Build Stage ---
 # Use a Maven and JDK image to build the application.
 # Using a specific version ensures reproducible builds.
-FROM maven:3.9.6-eclipse-temurin-21 AS builder
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 
 # Set the working directory inside the container.
 WORKDIR /app
