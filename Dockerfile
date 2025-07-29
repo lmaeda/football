@@ -13,7 +13,7 @@ WORKDIR /app
 # Using the wrapper ensures a consistent Maven version across all environments.
 # COPY .mvn/ .mvn
 # COPY mvnw .
-# COPY pom.xml .
+COPY pom.xml .
 
 # Fix CRLF (Windows) line endings in the mvnw script that can cause execution errors in Linux containers.
 # This is a common issue when files are checked out on a Windows machine.
@@ -24,13 +24,13 @@ WORKDIR /app
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
-RUN mvn -X install
+RUN mvn -X dependency:go-offline -B
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application, skipping tests as they should be run in a separate CI stage.
-RUN mvn package
+RUN mvn package -DskipTests -B
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
