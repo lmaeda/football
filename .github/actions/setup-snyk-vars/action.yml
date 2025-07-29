@@ -50,7 +50,7 @@ runs:
             SNYK_TAGS+="${key}=${value},"
           fi
         done
-        SNYK_TAGS="app=${REPO_NAME},${SNYK_TAGS%,}"
+        SNYK_TAGS="${SNYK_TAGS}app=${REPO_NAME}"
 
         echo "proj_criticality=$CRITICALITY" >> $GITHUB_OUTPUT
         echo "proj_env=$(jq -r '.snyktags.operations_and_infrastructure.environment' $CONFIG_FILE)" >> $GITHUB_OUTPUT
