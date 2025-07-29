@@ -41,17 +41,44 @@ runs:
         SNYK_ORG_ID=$(jq -r '.snykOrg' $CONFIG_FILE)
         LIFECYCLE=$(jq -r '.snykproject_attributes.lifecycle' $CONFIG_FILE)
         CRITICALITY=$(jq -r '.snykproject_attributes.businesscriticality' $CONFIG_FILE)
-        jq_paths=(.snyktags.*.*)
-        SNYK_TAGS=""
-        for path in "${jq_paths[@]}"; do
-          key=$(echo "$path" | cut -d'.' -f4)
-          value=$(jq -r "$path" "$CONFIG_FILE")
-          if [[ -n "$value" && "$value" != "null" ]]; then
-            SNYK_TAGS+="${key}=${value},"
-          fi
-        done
+
+        DATA_SENSITIVITY=$(jq -r '.snyktags.security_and_compliance.data_sensitivity' .github/config.json)
+        COMPLIANCE_FRAMEWORK=$(jq -r '.snyktags.security_and_compliance.compliance_framework' .github/config.json)
+        CONTAINS_PII=$(jq -r '.snyktags.security_and_compliance.contains_pii' .github/config.json)
+        SECURITY_TIER=$(jq -r '.snyktags.security_and_compliance.security_tier' .github/config.json)
+        REQUIRES_ACTION_SCANNING=$(jq -r '.snyktags.security_and_compliance.requires_action_scanning' .github/config.json)
+        REQUIRES_MULTI_PARTY_REVIEW=$(jq -r '.snyktags.security_and_compliance.requires_multi_party_review' .github/config.json)
+
+        APP_NAME=$(jq -r '.snyktags.project_and_team_management.project_name' .github/config.json)
+        TEAMS=$(jq -r '.snyktags.project_and_team_management.teams' .github/config.json)
+        PROJECT_STATUS=$(jq -r '.snyktags.project_and_team_management.project_status' .github/config.json)
+        COST_CENTER=$(jq -r '.snyktags.project_and_team_management.cost_center' .github/config.json)
+        BUSINESS_UNIT=$(jq -r '.snyktags.project_and_team_management.business_unit' .github/config.json)
+        REVIEW_CYCLE=$(jq -r '.snyktags.project_and_team_management.review_cycle' .github/config.json)
+
+        ENVIRONMENT=$(jq -r '.snyktags.operations_and_infrastructure.environment' .github/config.json)
+        SERVICE_NAME=$(jq -r '.snyktags.operations_and_infrastructure.service_name' .github/config.json)
+        RUNTIME_ENVIRONMENT=$(jq -r '.snyktags.operations_and_infrastructure.runtime_environment' .github/config.json)
+        OPS_TIER=$(jq -r '.snyktags.operations_and_infrastructure.ops_tier' .github/config.json)
+        DEPLOYMENT_TYPE=$(jq -r '.snyktags.operations_and_infrastructure.deployment_type' .github/config.json)
+
+        REPOSITORY_TYPE=$(jq -r '.snyktags.general_and_informational.repository_type' .github/config.json)
+        CONTACTS=$(jq -r '.snyktags.general_and_informational.contacts' .github/config.json)
+
+        echo "Deploying ${APP_NAME} to the ${ENV} environment."
+        echo "The target AWS region is: ${AWS_REGION}"
+
+        # prepare the Snyk tags
+        SNYK_TAGS="team=frontend,app=${REPO_NAME},data_sensitivity=${DATA_SENSITIVITY}"
+        SNYK_TAGS="${SNYK_TAGS},compliance_framework=${COMPLIANCE_FRAMEWORK},contains_pii=${CONTAINS_PII}"
+        SNYK_TAGS="${SNYK_TAGS},security_tier=${SECURITY_TIER},requires_action_scanning=${REQUIRES_ACTION_SCANNING}"
+        SNYK_TAGS="${SNYK_TAGS},requires_multi_party_review=${REQUIRES_MULTI_PARTY_REVIEW},project_name=${APP_NAME}"
+        SNYK_TAGS="${SNYK_TAGS},teams=${TEAMS},project_status=${PROJECT_STATUS},cost_center=${COST_CENTER}"
+        SNYK_TAGS="${SNYK_TAGS},business_unit=${BUSINESS_UNIT},review_cycle=${REVIEW_CYCLE},environment=${ENVIRONMENT}"
+        SNYK_TAGS="${SNYK_TAGS},service_name=${SERVICE_NAME},runtime_environment=${RUNTIME_ENVIRONMENT}"
+        SNYK_TAGS="${SNYK_TAGS},ops_tier=${OPS_TIER},deployment_type=${DEPLOYMENT_TYPE}"
+        SNYK_TAGS="${SNYK_TAGS},repository_type=${REPOSITORY_TYPE},contacts=${CONTACTS}"
         SNYK_TAGS="app=${REPO_NAME},${SNYK_TAGS%,}"
-        echo "${SNYK_TAGS}"
 
         echo "proj_criticality=$CRITICALITY" >> $GITHUB_OUTPUT
         echo "proj_env=$(jq -r '.snyktags.operations_and_infrastructure.environment' $CONFIG_FILE)" >> $GITHUB_OUTPUT
