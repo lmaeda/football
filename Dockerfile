@@ -34,7 +34,7 @@ RUN mvn clean install
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
-FROM eclipse-temurin:21-jre-slim
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
