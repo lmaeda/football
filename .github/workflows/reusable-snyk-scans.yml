@@ -1,0 +1,88 @@
+name: Reusable Snyk Scans
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'The git ref (branch, tag, or SHA) to check out'
+        required: true
+        type: string
+      snyk_org_id:
+        required: true
+        type: string
+      snyk_scm_integration_id:
+        required: true
+        type: string
+      proj_reponame:
+        required: true
+        type: string
+      proj_repoorg:
+        required: true
+        type: string
+      proj_criticality:
+        required: true
+        type: string
+      proj_env:
+        required: true
+        type: string
+      proj_lifecycle:
+        required: true
+        type: string
+      snyk_tags:
+        required: true
+        type: string
+    secrets:
+      SNYK_TOKEN:
+        required: true
+      DOCKER_LOGIN:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
+
+jobs:
+  scan_vulnerability:
+    runs-on: ubuntu-latest
+    container: snyk/snyk:node
+    env:
+      SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref }}
+    - name: scan vulnerability with Snyk
+      run: |
+        snyk test --org=${{ inputs.snyk_org_id }} --all-projects --fail-on=all --severity-threshold=low || true
+        snyk iac test --org=${{ inputs.snyk_org_id }} --severity-threshold=low || true
+        snyk code test --org=${{ inputs.snyk_org_id }} --severity-threshold=low || true
+    - name: monitor/report with Snyk App UI
+      run: |
+        snyk iac test --org=${{ inputs.snyk_org_id }} --report --remote-repo-url=${{ github.server_url }}/${{ inputs.proj_repoorg }}/${{ inputs.proj_reponame }} --target-name=${{ inputs.proj_reponame }} --target-reference="${{ inputs.ref }}" --project-tags=app=${{ inputs.proj_reponame }}-iac,${{ inputs.snyk_tags }} --project-business-criticality=${{ inputs.proj_criticality }} --project-environment=${{ inputs.proj_env }} --project-lifecycle=${{ inputs.proj_lifecycle }} || true
+        snyk monitor --org=${{ inputs.snyk_org_id }} --all-projects --remote-repo-url=${{ github.server_url }}/${{ inputs.proj_repoorg }}/${{ inputs.proj_reponame }} --target-reference="${{ inputs.ref }}" --project-tags=app=${{ inputs.proj_reponame }}-os,${{ inputs.snyk_tags }} --project-business-criticality=${{ inputs.proj_criticality }} --project-environment=${{ inputs.proj_env }} --project-lifecycle=${{ inputs.proj_lifecycle }}
+        curl --request POST --header "Content-Type: application/json; charset=utf-8" --header "Authorization: token ${SNYK_TOKEN}" --data-binary "{
+          \"target\": { \"owner\": \"${{ inputs.proj_repoorg }}\", \"name\": \"${{ inputs.proj_reponame }}\", \"branch\": \"${{ inputs.ref }}\" }
+        }" "https://api.snyk.io/v1/org/${{ inputs.snyk_org_id }}/integrations/${{ inputs.snyk_scm_integration_id }}/import"
+
+  refresh_container:
+    needs: [scan_vulnerability]
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+      DOCKER_LOGIN: "${{ secrets.DOCKER_LOGIN }}"
+      SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref }}
+    - name: build container image
+      run: docker image build . --file Dockerfile --tag ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest
+    - name: scan vulnerability
+      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container test --org=${{ inputs.snyk_org_id }} --policy-path=./.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest || true
+    - name: monitor container image for vulnerability
+      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container monitor --org=${{ inputs.snyk_org_id }} --policy-path=./.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest --project-name=${{ inputs.proj_reponame }} --target-reference="${{ inputs.ref }}" --project-tags=app=${{ inputs.proj_reponame }}-container,${{ inputs.snyk_tags }} --project-business-criticality=${{ inputs.proj_criticality }} --project-environment=${{ inputs.proj_env }} --project-lifecycle=${{ inputs.proj_lifecycle }}  || true
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_LOGIN }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: push container image
+      run: docker push ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest

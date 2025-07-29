@@ -1,0 +1,89 @@
+{
+  "deployment": {
+    "region": "us-east-1"
+  },
+  "//": "The following IDs are used with Snyk API to import through GitHub int",
+  "snykScmIntegration": "d4835e7e-b4f4-481b-a59e-c95db2892587",
+  "snykOrg": "9aed8d8e-5740-42e4-b88c-126b1f6d6b93",
+
+  "//": "related to Snyk project attributes",
+  "snykproject_attributes":{
+    "//": "Allowed values for Project Environment: ",
+    "//":   "frontend, backend, internal, external, mobile, saas, onprem, hosted, distributed ",
+    "env": "distributed,external,backend",
+    "//": "Allowed values for Project Lifecycle: ",
+    "//":   "production, development, sandbox",
+    "lifecycle": "development",
+    "//": "Allowed values for Project Business Criticality: ",
+    "//":   "critical, high, medium, low",
+    "businesscriticality": "medium"
+  },
+
+  "//": "related to Snyk project tags",
+  "snyktags": {
+    "security_and_compliance":{
+      "//": "allowed values for data_sensitivity:",
+      "//":   "public, internal, confidential, restricted",
+      "data_sensitivity": "public",
+      "//": "allowed values for compliance_framework:",
+      "//":   "gdpr, hipaa, pci-dss, fedramp, sox, soc2, iso27001, cmmc, nist csf, cis, critical security controls, cobit",
+      "compliance_framework": "gdpr,nist-csf",
+      "//": "allowed values for contains_pii:",
+      "//":   "true, false",
+      "contains_pii": "false",
+      "//": "allowed values for security_tier:",
+      "//":   "tier-0, tier-1, tier-2, tier-3",
+      "security_tier": "tier-0",
+      "//": "allowed values for requires_action_scanning:",
+      "//":   "true, false",
+      "requires_action_scanning": "false",
+      "//": "allowed values for requires_multi_party_review:",
+      "//":   "true, false",
+      "requires_multi_party_review": "false"
+    },
+    "project_and_team_management":{
+      "//": "allowed values for project_name:",
+      "project_name": "football",
+      "//": "allowed values for teams:",
+      "//":   "values that stem from functiional, product-aligned, platform",
+      "teams": "mobile",
+      "//": "allowed values for project_status:",
+      "//":   "active, archived, deprecated, maintenance",
+      "project_status": "active",
+      "//": "allowed values for cost_center:",
+      "//":   "product, engineering, marketing, sales, support, operations, finance, hr, it",
+      "cost_center": "product",
+      "//": "allowed values for business_unit:",
+      "//":   "values that stem from functional, product-aligned, platform",
+      "business_unit": "product",
+      "//": "allowed values for review_cycle:",
+      "//":   "quarterly, semi-annually, annually, ad-hoc",
+      "review_cycle": "quarterly"
+    },
+    "operations_and_infrastructure":{
+      "//": "allowed values for environment:",
+      "//":   "production, staging, development, testing, qa, sandbox",
+      "environment": "production",
+      "//": "allowed values for service_name:",
+      "//":   "values that stem from functional, product-aligned, platform",
+      "service_name": "app",
+      "//": "allowed values for runtime-environment:",
+      "//":   "C/C++, C#, Java, JavaScript, Python, Ruby, Go, PHP, Swift, Kotlin, Rust, TypeScript",
+      "runtime_environment": "Java",
+      "//": "allowed values for ops_tier:",
+      "//":   "tier-0, tier-1, tier-2, tier-3",
+      "ops_tier": "tier-0",
+      "//": "allowed values for deployment_type:",
+      "//":   "kubernetes,container-app,ecs, serverless, paas, edge-compute, vm,static-site",
+      "deployment_type": "kubernetes",
+    },
+    "general_and_informational":{
+      "//": "allowed values for repository_type:",
+      "//":  "service, application, website, worker, library, sdk, framework, infrastructure, actions-workflow, tooling, configuration, documentation, data-service, template, poc, archive, learning",
+      "repository_type": "application",
+      "//": "allowed values for contacts:",
+      "//":   "key contacts",
+      "contacts": "@snyk"
+    }
+  }
+}

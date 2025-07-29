@@ -1,0 +1,63 @@
+name: 'Setup Snyk Variables'
+description: 'Reads config.json and sets up Snyk-related variables and tags as outputs.'
+outputs:
+  proj_criticality:
+    description: "Project business criticality"
+    value: ${{ steps.set_vars.outputs.proj_criticality }}
+  proj_env:
+    description: "Project environment"
+    value: ${{ steps.set_vars.outputs.proj_env }}
+  proj_lifecycle:
+    description: "Project lifecycle"
+    value: ${{ steps.set_vars.outputs.proj_lifecycle }}
+  proj_reponame:
+    description: "Repository name"
+    value: ${{ steps.set_vars.outputs.proj_reponame }}
+  proj_repoorg:
+    description: "Repository organization"
+    value: ${{ steps.set_vars.outputs.proj_repoorg }}
+  snyk_scm_integration_id:
+    description: "Snyk SCM Integration ID"
+    value: ${{ steps.set_vars.outputs.snyk_scm_integration_id }}
+  snyk_org_id:
+    description: "Snyk Organization ID"
+    value: ${{ steps.set_vars.outputs.snyk_org_id }}
+  snyk_tags:
+    description: "Comma-separated Snyk tags"
+    value: ${{ steps.set_vars.outputs.snyk_tags }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Project Environment Variables
+      id: set_vars
+      run: |
+        REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+        REPO_ORG=$(echo "${{ github.repository }}" | cut -d'/' -f1)
+
+        # Read all values from config.json
+        CONFIG_FILE=".github/config.json"
+        SNYK_INTEGRATION_ID=$(jq -r '.snykScmIntegration' $CONFIG_FILE)
+        SNYK_ORG_ID=$(jq -r '.snykOrg' $CONFIG_FILE)
+        LIFECYCLE=$(jq -r '.snykproject_attributes.lifecycle' $CONFIG_FILE)
+        CRITICALITY=$(jq -r '.snykproject_attributes.businesscriticality' $CONFIG_FILE)
+        jq_paths=(.snyktags.*.*)
+        SNYK_TAGS=""
+        for path in "${jq_paths[@]}"; do
+          key=$(echo "$path" | cut -d'.' -f4)
+          value=$(jq -r "$path" "$CONFIG_FILE")
+          if [[ -n "$value" && "$value" != "null" ]]; then
+            SNYK_TAGS+="${key}=${value},"
+          fi
+        done
+        SNYK_TAGS="app=${REPO_NAME},${SNYK_TAGS%,}"
+
+        echo "proj_criticality=$CRITICALITY" >> $GITHUB_OUTPUT
+        echo "proj_env=$(jq -r '.snyktags.operations_and_infrastructure.environment' $CONFIG_FILE)" >> $GITHUB_OUTPUT
+        echo "proj_lifecycle=$LIFECYCLE" >> $GITHUB_OUTPUT
+        echo "proj_reponame=$REPO_NAME" >> $GITHUB_OUTPUT
+        echo "proj_repoorg=$REPO_ORG" >> $GITHUB_OUTPUT
+        echo "snyk_scm_integration_id=${SNYK_INTEGRATION_ID}" >> $GITHUB_OUTPUT
+        echo "snyk_org_id=${SNYK_ORG_ID}" >> $GITHUB_OUTPUT
+        echo "snyk_tags=${SNYK_TAGS}" >> $GITHUB_OUTPUT
+      shell: bash

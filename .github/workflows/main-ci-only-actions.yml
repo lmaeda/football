@@ -1,0 +1,76 @@
+name: Snyk Demo using GithubActions - no Terraform
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'name of the Snyk team'
+        required: false
+        default: 'Snyk TSM APJ'
+
+jobs:
+  setup_vars: # This job sets variables using a composite action
+    runs-on: ubuntu-latest
+    outputs:
+      proj_criticality: ${{ steps.snyk_vars.outputs.proj_criticality }}
+      proj_env: ${{ steps.snyk_vars.outputs.proj_env }}
+      proj_lifecycle: ${{ steps.snyk_vars.outputs.proj_lifecycle }}
+      proj_reponame: ${{ steps.snyk_vars.outputs.proj_reponame }}
+      proj_repoorg: ${{ steps.snyk_vars.outputs.proj_repoorg }}
+      snyk_scm_integration_id: ${{ steps.snyk_vars.outputs.snyk_scm_integration_id }}
+      snyk_org_id: ${{ steps.snyk_vars.outputs.snyk_org_id }}
+      snyk_tags: ${{ steps.snyk_vars.outputs.snyk_tags }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Snyk Variables
+        id: snyk_vars
+        uses: ./.github/actions/setup-snyk-vars.yml
+
+  use_outputs_in_another_job: # Job to demonstrate using outputs from env_vars
+    runs-on: ubuntu-latest
+    needs: [setup_vars]
+    if: always() # Ensure this job runs to show output
+    steps:
+      - name: Display variables from 'env_vars' job outputs
+        run: |
+          echo "--- Outputs from setup_vars job ---"
+          echo "Project Criticality from 'setup_vars' job: ${{ needs.setup_vars.outputs.proj_criticality }}"
+          echo "Project Environment from 'setup_vars' job: ${{ needs.setup_vars.outputs.proj_env }}"
+          echo "Project Lifecycle from 'setup_vars' job: ${{ needs.setup_vars.outputs.proj_lifecycle }}"
+          echo "proj_reponame from 'setup_vars' job: ${{ needs.setup_vars.outputs.proj_reponame }}"
+          echo "proj_repoorg from 'setup_vars' job: ${{ needs.setup_vars.outputs.proj_repoorg }}"
+          echo "snyk_scm_integration_id from 'setup_vars' job: ${{ needs.setup_vars.outputs.snyk_scm_integration_id }}"
+          echo "snyk_org_id from 'setup_vars' job: ${{ needs.setup_vars.outputs.snyk_org_id }}"
+          echo "snyk_tags from 'setup_vars' job: ${{ needs.setup_vars.outputs.snyk_tags }}"
+        
+  test_appcode:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref_name }}
+    - name: build appcode
+      run: "echo 'This is a placeholder for the appcode build step.' # Replace with actual build command" 
+
+  snyk_security_scan:
+    needs: [setup_vars, test_appcode]
+    environment: snyk_demo
+    uses: ./.github/workflows/reusable-snyk-scans.yml
+    with:
+      ref: ${{ github.ref_name }}
+      snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
+      snyk_scm_integration_id: ${{ needs.setup_vars.outputs.snyk_scm_integration_id }}
+      proj_reponame: ${{ needs.setup_vars.outputs.proj_reponame }}
+      proj_repoorg: ${{ needs.setup_vars.outputs.proj_repoorg }}
+      proj_criticality: ${{ needs.setup_vars.outputs.proj_criticality }}
+      proj_env: ${{ needs.setup_vars.outputs.proj_env }}
+      proj_lifecycle: ${{ needs.setup_vars.outputs.proj_lifecycle }}
+      snyk_tags: ${{ needs.setup_vars.outputs.snyk_tags }}
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
