@@ -24,13 +24,13 @@ RUN chmod +x mvnw
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
-RUN ./mvnw -X dependency:go-offline
+RUN mvn -X dependency:go-offline
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application, skipping tests as they should be run in a separate CI stage.
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
