@@ -58,7 +58,7 @@ jobs:
 
   snyk_security_scan:
     needs: [setup_vars, test_appcode]
-    uses: .github/workflows/reusable-snyk-scans.yml
+    uses: .github/workflows/reusable-snyk-scans.yml@feature-evaluation-snyk-scans
     with:
       ref: ${{ github.ref_name }}
       snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
