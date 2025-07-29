@@ -30,7 +30,7 @@ RUN mvn -X dependency:go-offline -B
 COPY src ./src
 
 # Package the application, skipping tests as they should be run in a separate CI stage.
-RUN mvn package -DskipTests -B
+RUN mvn -X package
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
