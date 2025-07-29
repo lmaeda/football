@@ -61,6 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: snyk_demo
     steps:
+      - uses: actions/checkout@v4
       - name: Run Snyk Security Scan
         uses: ./.github/workflows/reusable-snyk-scans
         with:
