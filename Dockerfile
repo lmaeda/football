@@ -11,16 +11,16 @@ WORKDIR /app
 # Copy the Maven wrapper and pom.xml to leverage Docker layer caching.
 # This way, dependencies are only re-downloaded if pom.xml or the wrapper changes.
 # Using the wrapper ensures a consistent Maven version across all environments.
-COPY .mvn/ .mvn
-COPY mvnw .
-COPY pom.xml .
+# COPY .mvn/ .mvn
+# COPY mvnw .
+# COPY pom.xml .
 
 # Fix CRLF (Windows) line endings in the mvnw script that can cause execution errors in Linux containers.
 # This is a common issue when files are checked out on a Windows machine.
-RUN sed -i 's/\r$//' mvnw
+# RUN sed -i 's/\r$//' mvnw
 
 # Ensure the Maven wrapper is executable.
-RUN chmod +x mvnw
+# RUN chmod +x mvnw
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
