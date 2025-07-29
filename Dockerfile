@@ -22,7 +22,7 @@ RUN ./mvnw package -DskipTests -B
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
-FROM openjdk:17-jre-slim
+FROM openjdk:25-ea-17-slim-bookworm
 
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
