@@ -12,7 +12,7 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw .
 COPY pom.xml .
-RUN ./mvnw dependency:go-offline -B
+RUN ./mvnw verify -DskipTests -B
 
 # Copy the rest of the application source code.
 COPY src ./src
