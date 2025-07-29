@@ -18,7 +18,7 @@ RUN chmod +x mvnw
 COPY pom.xml .
 
 # Download the dependencies without building the application.
-RUN ./mvnw verify
+RUN ./mvnw clean install
 
 # Copy the rest of the application source code.
 COPY src ./src
