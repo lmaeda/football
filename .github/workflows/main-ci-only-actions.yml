@@ -58,7 +58,7 @@ jobs:
 
   snyk_security_scan:
     needs: [setup_vars, test_appcode]
-    uses: lucsmaeda/football/.github/workflows/reusable-snyk-scans.yml@${{ github.ref_name }}
+    uses: .github/workflows/reusable-snyk-scans.yml
     with:
       ref: ${{ github.ref_name }}
       snyk_org_id: ${{ needs.setup_vars.outputs.snyk_org_id }}
