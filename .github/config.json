@@ -75,7 +75,7 @@
       "ops_tier": "tier-0",
       "//": "allowed values for deployment_type:",
       "//":   "kubernetes,container-app,ecs, serverless, paas, edge-compute, vm,static-site",
-      "deployment_type": "kubernetes",
+      "deployment_type": "kubernetes"
     },
     "general_and_informational":{
       "//": "allowed values for repository_type:",
