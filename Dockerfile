@@ -16,13 +16,13 @@ COPY .mvn/ .mvn
 RUN chmod +x mvnw
 
 COPY pom.xml .
-RUN ./mvnw verify -DskipTests -B
+RUN ./mvnw verify -DskipTests
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application, skipping the tests.
-RUN ./mvnw package -DskipTests -B
+RUN ./mvnw package -DskipTests
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
