@@ -2,35 +2,47 @@
 
 # --- Build Stage ---
 # Use a Maven and JDK image to build the application.
+# Using a specific version ensures reproducible builds.
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 # Set the working directory inside the container.
 WORKDIR /app
 
 # Copy the Maven wrapper and pom.xml to leverage Docker layer caching.
-# This way, dependencies are only re-downloaded if pom.xml changes.
-# COPY .mvn/ .mvn
-# COPY mvnw .
-
-# Ensure the Maven wrapper is executable.
-# RUN chmod +x mvnw
-
+# This way, dependencies are only re-downloaded if pom.xml or the wrapper changes.
+# Using the wrapper ensures a consistent Maven version across all environments.
+COPY .mvn/ .mvn
+COPY mvnw .
 COPY pom.xml .
 
-# Download the dependencies without building the application.
-RUN mvn -X install
+# Ensure the Maven wrapper is executable.
+RUN chmod +x mvnw
+
+# Download the dependencies. Using dependency:go-offline is more efficient
+# for this purpose than 'install' or 'package'.
+RUN ./mvnw dependency:go-offline
 
 # Copy the rest of the application source code.
 COPY src ./src
 
-# Package the application.
-RUN mvn package
+# Package the application, skipping tests as they should be run in a separate CI stage.
+RUN ./mvnw package -DskipTests
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+
+# Create a non-root user and group for security.
+# Running as a non-root user is a security best practice.
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+# Copy the built application JAR from the builder stage and set ownership.
+COPY --from=builder --chown=appuser:appgroup /app/target/*.jar app.jar
+
+# Switch to the non-root user.
+USER appuser
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
