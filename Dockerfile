@@ -15,6 +15,10 @@ COPY .mvn/ .mvn
 COPY mvnw .
 COPY pom.xml .
 
+# Fix CRLF (Windows) line endings in the mvnw script that can cause execution errors in Linux containers.
+# This is a common issue when files are checked out on a Windows machine.
+RUN sed -i 's/\r$//' mvnw
+
 # Ensure the Maven wrapper is executable.
 RUN chmod +x mvnw
 
