@@ -24,13 +24,13 @@ WORKDIR /app
 
 # Download the dependencies. Using dependency:go-offline is more efficient
 # for this purpose than 'install' or 'package'.
-RUN mvn -X dependency:go-offline
+RUN mvn -X install
 
 # Copy the rest of the application source code.
 COPY src ./src
 
 # Package the application, skipping tests as they should be run in a separate CI stage.
-RUN mvn package -DskipTests
+RUN mvn package
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
