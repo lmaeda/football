@@ -2,10 +2,12 @@ version: '3.8'
 
 services:
   app:
+    # Explicitly name the image that will be built.
+    image: football
     # Build the Docker image from the Dockerfile in the current directory.
     build: .
     # Name the container for easier reference.
-    container_name: football-app
+    container_name: football
     # Map port 8080 on the host to port 8080 in the container.
     ports:
       - "8080:8080"
