@@ -39,6 +39,7 @@ runs:
         CONFIG_FILE=".github/config.json"
         SNYK_INTEGRATION_ID=$(jq -r '.snykScmIntegration' $CONFIG_FILE)
         SNYK_ORG_ID=$(jq -r '.snykOrg' $CONFIG_FILE)
+        ENV=$(jq -r '.snyproject_attributes.env' $CONFIG_FILE)
         LIFECYCLE=$(jq -r '.snykproject_attributes.lifecycle' $CONFIG_FILE)
         CRITICALITY=$(jq -r '.snykproject_attributes.businesscriticality' $CONFIG_FILE)
 
@@ -78,10 +79,10 @@ runs:
         SNYK_TAGS="${SNYK_TAGS},service_name=${SERVICE_NAME},runtime_environment=${RUNTIME_ENVIRONMENT}"
         SNYK_TAGS="${SNYK_TAGS},ops_tier=${OPS_TIER},deployment_type=${DEPLOYMENT_TYPE}"
         SNYK_TAGS="${SNYK_TAGS},repository_type=${REPOSITORY_TYPE},contacts=${CONTACTS}"
-        SNYK_TAGS="app=${REPO_NAME},${SNYK_TAGS%,}"
+        SNYK_TAGS="${SNYK_TAGS%,}"
 
         echo "proj_criticality=$CRITICALITY" >> $GITHUB_OUTPUT
-        echo "proj_env=$(jq -r '.snyktags.operations_and_infrastructure.environment' $CONFIG_FILE)" >> $GITHUB_OUTPUT
+        echo "proj_env=$ENV" >> $GITHUB_OUTPUT
         echo "proj_lifecycle=$LIFECYCLE" >> $GITHUB_OUTPUT
         echo "proj_reponame=$REPO_NAME" >> $GITHUB_OUTPUT
         echo "proj_repoorg=$REPO_ORG" >> $GITHUB_OUTPUT
