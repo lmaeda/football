@@ -39,7 +39,7 @@ runs:
         CONFIG_FILE=".github/config.json"
         SNYK_INTEGRATION_ID=$(jq -r '.snykScmIntegration' $CONFIG_FILE)
         SNYK_ORG_ID=$(jq -r '.snykOrg' $CONFIG_FILE)
-        ENV=$(jq -r '.snyproject_attributes.env' $CONFIG_FILE)
+        ENV=$(jq -r '.snykproject_attributes.env' $CONFIG_FILE)
         LIFECYCLE=$(jq -r '.snykproject_attributes.lifecycle' $CONFIG_FILE)
         CRITICALITY=$(jq -r '.snykproject_attributes.businesscriticality' $CONFIG_FILE)
 
