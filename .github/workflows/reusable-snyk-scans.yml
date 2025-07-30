@@ -80,9 +80,9 @@ jobs:
     - name: build container image
       run: docker image build . --file Dockerfile --tag ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest
     - name: scan vulnerability
-      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container test --org=${{ inputs.snyk_org_id }} --policy-path=/app/.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest || true
+      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container test --org=${{ inputs.snyk_org_id }} --policy-path=./.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest || true
     - name: monitor container image for vulnerability
-      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container monitor --org=${{ inputs.snyk_org_id }} --policy-path=/app/.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest --project-name=${{ inputs.proj_reponame }} --target-reference="${{ inputs.ref }}" --project-tags="app=${{ inputs.proj_reponame }}-container,${{ inputs.snyk_tags }}" --project-business-criticality=${{ inputs.proj_criticality }} --project-environment=${{ inputs.proj_env }} --project-lifecycle=${{ inputs.proj_lifecycle }}  || true
+      run: docker run --env SNYK_TOKEN -v /var/run/docker.sock:/var/run/docker.sock snyk/snyk:docker snyk container monitor --org=${{ inputs.snyk_org_id }} --policy-path=./.snyk --app-vulns --nested-jars-depth=15 ${{env.DOCKER_LOGIN}}/${{ inputs.proj_reponame }}_${{ inputs.ref }}:latest --project-name=${{ inputs.proj_reponame }} --target-reference="${{ inputs.ref }}" --project-tags="app=${{ inputs.proj_reponame }}-container,${{ inputs.snyk_tags }}" --project-business-criticality=${{ inputs.proj_criticality }} --project-environment=${{ inputs.proj_env }} --project-lifecycle=${{ inputs.proj_lifecycle }}  || true
     - name: Login to DockerHub
       uses: docker/login-action@v2
       with:
