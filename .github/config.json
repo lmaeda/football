@@ -27,7 +27,7 @@
       "data_sensitivity": "public",
       "//": "allowed values for compliance_framework:",
       "//":   "gdpr, hipaa, pci-dss, fedramp, sox, soc2, iso27001, cmmc, nist csf, cis, critical security controls, cobit",
-      "compliance_framework": "gdpr;nist-csf",
+      "compliance_framework": "gdpr+nist-csf",
       "//": "allowed values for contains_pii:",
       "//":   "true, false",
       "contains_pii": "false",
