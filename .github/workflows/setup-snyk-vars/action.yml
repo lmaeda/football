@@ -70,7 +70,7 @@ runs:
         echo "The target AWS region is: ${AWS_REGION}"
 
         # prepare the Snyk tags
-        SNYK_TAGS="team=frontend,app=${REPO_NAME},data_sensitivity=${DATA_SENSITIVITY}"
+        SNYK_TAGS="data_sensitivity=${DATA_SENSITIVITY}"
         SNYK_TAGS="${SNYK_TAGS},compliance_framework=${COMPLIANCE_FRAMEWORK},contains_pii=${CONTAINS_PII}"
         SNYK_TAGS="${SNYK_TAGS},security_tier=${SECURITY_TIER},requires_action_scanning=${REQUIRES_ACTION_SCANNING}"
         SNYK_TAGS="${SNYK_TAGS},requires_multi_party_review=${REQUIRES_MULTI_PARTY_REVIEW},project_name=${APP_NAME}"
