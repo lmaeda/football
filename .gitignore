@@ -1,8 +1,13 @@
+# Ignore files and directories in a Java project
+# that are not needed in version control
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+.DS_Store
+Thumbs.db
 
 ### STS ###
 .apt_generated
