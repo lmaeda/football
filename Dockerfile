@@ -3,7 +3,7 @@
 # --- Build Stage ---
 # Use a Maven and JDK image to build the application.
 # Using a specific version ensures reproducible builds.
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
+FROM maven:3.9.10-eclipse-temurin-21-alpine AS builder
 
 # Set the working directory inside the container.
 WORKDIR /app
@@ -34,7 +34,9 @@ RUN mvn clean install
 
 # --- Final Stage ---
 # Use a slim JRE image for the final application container.
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre-alpine AS final
+
+# Set the working directory inside the container.
 
 WORKDIR /app
 
