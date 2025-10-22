@@ -33,7 +33,7 @@ public class PlayerControllerTest {
         String name = "Ivana ANDRES";
         mvc.perform(MockMvcRequestBuilders.get("/players/" + name).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string(name));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(name));
     }
 
     @Test
@@ -41,16 +41,20 @@ public class PlayerControllerTest {
         String name = "Ivana ANDRES";
         mvc.perform(MockMvcRequestBuilders.delete("/players/" + name).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string("Player " + name + " deleted"));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("deleted: " + name));
     }
 
     @Test
     public void testUpdatePlayer() throws Exception {
         String name = "Ivana ANDRES";
         String newName = "Ivana ANDRES SANCHEZ";
-        mvc.perform(MockMvcRequestBuilders.put("/players/" + name).content(newName).accept(MediaType.APPLICATION_JSON))
+        String json = "{\"name\": \"" + newName + "\"}";
+        mvc.perform(MockMvcRequestBuilders.put("/players/" + name)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().string("Player " + name + " updated to " + newName));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(name + " -> " + newName));
     }
     
 }
